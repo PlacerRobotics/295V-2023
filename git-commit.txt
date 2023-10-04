@@ -1,0 +1,11 @@
+git remote set-url origin <repo-url>                                                                                    
+git add *
+git commit -m "update"
+git branch -M "branch-name"
+git push origin "branch-name"
+git status
+press 'q' to exit out of git branch or smth that ends with "END"
+
+git config pull.rebase false  # merge
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only

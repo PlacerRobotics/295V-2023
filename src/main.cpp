@@ -2,14 +2,16 @@
 #include "lemlib/api.hpp"
 
 // drive motors
-pros::Motor lF(-9, pros::E_MOTOR_GEARSET_06); // left front motor. port 9, reversed
-pros::Motor lB(-21, pros::E_MOTOR_GEARSET_06); // left back motor. port 21, reversed
-pros::Motor rF(12, pros::E_MOTOR_GEARSET_06); // right front motor. port 12
-pros::Motor rB(16, pros::E_MOTOR_GEARSET_06); // right back motor. port 16
+pros::Motor lF1(4, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lF2(5, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lB(6, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rF1(1, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rF2(2, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rB(3, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
 
 // motor groups
-pros::MotorGroup leftMotors({lF, lB}); // left motor group
-pros::MotorGroup rightMotors({rF, rB}); // right motor group
+pros::MotorGroup leftMotors({lF1, lF2, lB}); // left motor group
+pros::MotorGroup rightMotors({rF1, rF2, rB}); // right motor group
 
 // Inertial Sensor on port 11
 pros::Imu imu(11);
@@ -20,7 +22,7 @@ pros::Rotation horizontalEnc(7);
 lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, -3.7);
 
 // drivetrain
-lemlib::Drivetrain_t drivetrain {&leftMotors, &rightMotors, 10, lemlib::Omniwheel::NEW_325, 360, 2};
+lemlib::Drivetrain_t drivetrain {&leftMotors, &rightMotors, 10, lemlib::Omniwheel::NEW_4, 600, 2};
 
 // lateral motion controller
 lemlib::ChassisController_t lateralController {10, 30, 1, 100, 3, 500, 20};
@@ -39,21 +41,26 @@ lemlib::Chassis chassis(drivetrain, lateralController, angularController, sensor
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+
+void screen() {
+    // loop forever
+    while (true) {
+        lemlib::Pose pose = chassis.getPose(); // get the current position of the robot
+        pros::lcd::print(0, "x: %f", pose.x); // print the x position
+        pros::lcd::print(1, "y: %f", pose.y); // print the y position
+        pros::lcd::print(2, "heading: %f", pose.theta); // print the heading
+        pros::delay(10);
+    }
+}
+
 void initialize() {
     pros::lcd::initialize();
     lemlib::Logger::initialize();
     chassis.calibrate(); // calibrate sensors
+    chassis.setPose(0, 0, 0); // X: 0, Y: 0, Heading: 0
 
     // print odom values to the brain
-    pros::Task screenTask([=]() {
-        while (true) {
-            pros::lcd::print(0, "X: %f", chassis.getPose().x);
-            pros::lcd::print(1, "Y: %f", chassis.getPose().y);
-            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
-            lemlib::Logger::logOdom(chassis.getPose());
-            pros::delay(50);
-        }
-    });
+    pros::Task screenTask(screen);
 }
 
 /**
@@ -85,7 +92,15 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+    // chassis.turnTo(53, 53, 1000); // turn to the point (53, 53) with a timeout of 1000 ms
+    // chassis.turnTo(-20, 32, 1500, true); // turn to the point (-20, 32) with the back of the robot facing the point, and a timeout of 1500 ms
+    // chassis.turnTo(10, 0, 1000, false, 50); // turn to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
+    // chassis.moveTo(53, 53, 1000); // move to the point (53, 53) with a timeout of 1000 ms
+    // chassis.moveTo(10, 0, 1000, 50); // move to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
+}
+
+
 
 /**
  * Runs the operator control code. This function will be started in its own task
