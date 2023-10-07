@@ -20,6 +20,15 @@
 #include "lemlib/pose.hpp"
 #include "lemlib/logger.hpp"
 
+extern pros::Motor lF1;
+extern pros::Motor lF2;
+extern pros::Motor lB;
+extern pros::Motor rF1;
+extern pros::Motor rF2;
+extern pros::Motor rB;
+extern pros::Motor_Group leftMotors;
+extern pros::Motor_Group rightMotors;
+
 namespace lemlib {
 /**
  * @brief Struct containing all the sensors used for odometry

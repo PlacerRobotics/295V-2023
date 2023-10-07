@@ -1,18 +1,6 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 
-// drive motors
-pros::Motor lF1(4, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lF2(5, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lB(6, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF1(1, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF2(2, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rB(3, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-
-// motor groups
-pros::MotorGroup leftMotors({lF1, lF2, lB}); // left motor group
-pros::MotorGroup rightMotors({rF1, rF2, rB}); // right motor group
-
 // Inertial Sensor on port 11
 pros::Imu imu(11);
 
@@ -98,6 +86,15 @@ void autonomous() {
     // chassis.turnTo(10, 0, 1000, false, 50); // turn to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
     // chassis.moveTo(53, 53, 1000); // move to the point (53, 53) with a timeout of 1000 ms
     // chassis.moveTo(10, 0, 1000, 50); // move to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
+
+    // In order for the robot to read the file, we need to put it on a micro SD card. Simply drag the file onto the SD card and it will be copied over. You can then insert the SD card into the robot and it will be able to read the file.
+
+    // file name: path.txt
+    // timeout: 2000 ms
+    // lookahead distance: 15 inches
+    // chassis.follow("path.txt", 1000, 15);
+    // // follow the next path, but with the robot going backwards
+    // chassis.follow("path2.txt", 2000, 15, true);
 }
 
 
@@ -115,4 +112,6 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() { chassis.moveTo(20, 15, 90, 4000); }
+void opcontrol() { 
+    chassis.moveTo(20, 15, 90, 4000); 
+}
