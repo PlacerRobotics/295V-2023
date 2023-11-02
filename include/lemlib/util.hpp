@@ -13,6 +13,7 @@
 
 #include <vector>
 #include "lemlib/pose.hpp"
+#include "main.h"
 
 namespace lemlib {
 /**
@@ -91,4 +92,33 @@ float ema(float current, float previous, float smooth);
  * @return float curvature
  */
 float getCurvature(Pose pose, Pose other);
+namespace util {
+extern bool AUTON_RAN;
+
+/**
+ * Returns 1 if input is positive and -1 if input is negative
+ */
+int sgn(double input);
+
+/**
+ * Returns true if the input is < 0
+ */
+bool is_reversed(double input);
+
+/**
+ * Returns input restricted to min-max threshold
+ */
+double clip_num(double input, double max, double min);
+
+/**
+ * Is the SD card plugged in?
+ */
+const bool IS_SD_CARD = pros::usd::is_installed();
+
+/**
+ * Delay time for tasks
+ */
+const int DELAY_TIME = 10;
+} // namespace util
 } // namespace lemlib
+

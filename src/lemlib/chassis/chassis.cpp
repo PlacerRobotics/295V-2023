@@ -18,6 +18,8 @@
 #include "lemlib/chassis/odom.hpp"
 #include "lemlib/chassis/trackingWheel.hpp"
 
+pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
 // M_PI definition along with M_PI_2 definition. 
 
 
@@ -32,6 +34,9 @@ pros::Motor rB(3, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES)
 // motor groups
 pros::MotorGroup leftMotors({lF1, lF2, lB}); // left motor group
 pros::MotorGroup rightMotors({rF1, rF2, rB}); // right motor group
+
+// Rotation sensor
+pros::Rotation catapult(10);
 
 /**
  * @brief Construct a new Chassis
@@ -342,4 +347,51 @@ void lemlib::Chassis::moveTo(float x, float y, float theta, int timeout, bool as
     distTravelled = -1;
     // give the mutex back
     mutex.give();
+}
+
+// void lemlib::Chassis::reset_drive_sensor() {
+//   leftMotors.tare_position();
+//   rightMotors.tare_position();
+//   if (is_tracker == DRIVE_ADI_ENCODER) {
+//     left_tracker.reset();
+//     right_tracker.reset();
+//     return;
+//   } else if (is_tracker == DRIVE_ROTATION) {
+//     left_rotation.reset_position();
+//     right_rotation.reset_position();
+//     return;
+//   }
+// }
+
+// void lemlib::Chassis::reset_drive_sensors_opcontrol() {
+//   if (lemlib::util::AUTON_RAN) {
+//     reset_drive_sensor();
+//     lemlib::util::AUTON_RAN = false;
+//   }
+// }
+
+void lemlib::Chassis::arcade_standard() {
+//   is_tank = false;
+//   reset_drive_sensors_opcontrol();
+
+//   // Toggle for controller curve
+//   modify_curve_with_controller();
+
+//   int fwd_stick, turn_stick;
+//   // Check arcade type (split vs single, normal vs flipped)
+//   // Put the joysticks through the curve function
+//   fwd_stick = left_curve_function(controller.get_analog(ANALOG_LEFT_Y));
+//   turn_stick = right_curve_function(controller.get_analog(ANALOG_RIGHT_X));
+
+//   // Set robot to l_stick and r_stick, check joystick threshold, set active brake
+//   joy_thresh_opcontrol(fwd_stick - turn_stick, fwd_stick + turn_stick);
+
+    int yTemp = controller.get_analog(ANALOG_LEFT_Y); // left stick y
+    int xTemp = controller.get_analog(ANALOG_RIGHT_X); // left stick x
+
+    int ySquared = (int) ((pow(yTemp, 2) / 127) * sgn(yTemp));
+    int xSquared = (int) ((pow(xTemp, 2) / 127) * sgn(xTemp));
+
+    leftMotors = ySquared + xSquared;
+    rightMotors = ySquared - xSquared;
 }

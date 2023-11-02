@@ -1,5 +1,8 @@
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "lemlib/chassis/chassis.hpp"
+#include "lemlib/chassis/odom.hpp"
+ASSET(path_txt);
 
 // Inertial Sensor on port 11
 pros::Imu imu(11);
@@ -69,7 +72,7 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-/**
+/*
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the autonomous
@@ -79,7 +82,8 @@ void competition_initialize() {}
  * If the robot is disabled or communications is lost, the autonomous task
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
- */
+*/
+
 void autonomous() {
     // chassis.turnTo(53, 53, 1000); // turn to the point (53, 53) with a timeout of 1000 ms
     // chassis.turnTo(-20, 32, 1500, true); // turn to the point (-20, 32) with the back of the robot facing the point, and a timeout of 1500 ms
@@ -92,9 +96,10 @@ void autonomous() {
     // file name: path.txt
     // timeout: 2000 ms
     // lookahead distance: 15 inches
-    // chassis.follow("path.txt", 1000, 15);
+    // chassis.follow("lemlib/path.txt", 2000, 15);
+    chassis.follow(path_txt, 2000, 15);
     // // follow the next path, but with the robot going backwards
-    // chassis.follow("path2.txt", 2000, 15, true);
+    // chassis.follow("path.txt", 2000, 15, true);
 }
 
 
@@ -113,5 +118,6 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() { 
-    chassis.moveTo(20, 15, 90, 4000); 
+    // chassis.moveTo(20, 15, 90, 4000); 
+    chassis.arcade_standard();
 }

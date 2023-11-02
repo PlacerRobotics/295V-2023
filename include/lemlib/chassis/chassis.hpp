@@ -19,6 +19,7 @@
 #include "lemlib/chassis/trackingWheel.hpp"
 #include "lemlib/pose.hpp"
 #include "lemlib/logger.hpp"
+#include "main.h"
 
 extern pros::Motor lF1;
 extern pros::Motor lF2;
@@ -28,6 +29,8 @@ extern pros::Motor rF2;
 extern pros::Motor rB;
 extern pros::Motor_Group leftMotors;
 extern pros::Motor_Group rightMotors;
+extern pros::Controller controller;
+extern pros::Rotation catapult;
 
 namespace lemlib {
 /**
@@ -121,6 +124,7 @@ float defaultDriveCurve(float input, float scale);
  */
 class Chassis {
     public:
+        bool is_tank;
         /**
          * @brief Construct a new Chassis
          *
@@ -270,6 +274,9 @@ class Chassis {
          * curve, refer to the `defaultDriveCurve` documentation.
          */
         void curvature(int throttle, int turn, float cureGain = 0.0);
+        void arcade_standard();
+        void reset_drive_sensors_opcontrol();
+        void reset_drive_sensor();
     private:
         pros::Mutex mutex;
         float distTravelled = 0;
@@ -281,3 +288,17 @@ class Chassis {
         DriveCurveFunction_t driveCurve;
 };
 } // namespace lemlib
+
+namespace mechanisms{
+        class Intake{
+                public:
+                bool in;
+                bool out;
+                void intake(int speed);
+                void outake(int speed);
+        };
+        class Catapult{
+                public:
+                void cataMove(int speed);
+        };
+}

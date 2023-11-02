@@ -12,7 +12,7 @@
 #include <vector>
 #include "lemlib/pose.hpp"
 #include "lemlib/util.hpp"
-
+#include "main.h"
 /**
  * @brief Slew rate limiter
  *
@@ -21,7 +21,9 @@
  * @param maxChange maximum change. No maximum if set to 0
  * @return float - the limited value
  */
-float lemlib::slew(float target, float current, float maxChange) {
+namespace lemlib{
+
+float slew(float target, float current, float maxChange) {
     float change = target - current;
     if (maxChange == 0) return target;
     if (change > maxChange) change = maxChange;
@@ -35,7 +37,7 @@ float lemlib::slew(float target, float current, float maxChange) {
  * @param rad radians
  * @return float degrees
  */
-float lemlib::radToDeg(float rad) { return rad * 180 / M_PI; }
+float radToDeg(float rad) { return rad * 180 / M_PI; }
 
 /**
  * @brief Convert degrees to radians
@@ -43,7 +45,7 @@ float lemlib::radToDeg(float rad) { return rad * 180 / M_PI; }
  * @param deg degrees
  * @return float radians
  */
-float lemlib::degToRad(float deg) { return deg * M_PI / 180; }
+float degToRad(float deg) { return deg * M_PI / 180; }
 
 /**
  * @brief Calculate the error between 2 angles. Useful when calculating the error between 2 headings
@@ -53,7 +55,7 @@ float lemlib::degToRad(float deg) { return deg * M_PI / 180; }
  * @param radians true if angle is in radians, false if not. False by default
  * @return float wrapped angle
  */
-float lemlib::angleError(float angle1, float angle2, bool radians) {
+float angleError(float angle1, float angle2, bool radians) {
     float max = radians ? 2 * M_PI : 360;
     float half = radians ? M_PI : 180;
     angle1 = fmod(angle1, max);
@@ -70,7 +72,7 @@ float lemlib::angleError(float angle1, float angle2, bool radians) {
  * @param x the number to get the sign of
  * @return int - -1 if negative, 1 if positive
  */
-int lemlib::sgn(float x) {
+int sgn(float x) {
     if (x < 0) return -1;
     else return 1;
 }
@@ -81,7 +83,7 @@ int lemlib::sgn(float x) {
  * @param values
  * @return float
  */
-float lemlib::avg(std::vector<float> values) {
+float avg(std::vector<float> values) {
     float sum = 0;
     for (float value : values) { sum += value; }
     return sum / values.size();
@@ -95,7 +97,7 @@ float lemlib::avg(std::vector<float> values) {
  * @param smooth smoothing factor (0-1). 1 means no smoothing, 0 means no change
  * @return float - the smoothed output
  */
-float lemlib::ema(float current, float previous, float smooth) {
+float ema(float current, float previous, float smooth) {
     return (current * smooth) + (previous * (1 - smooth));
 }
 
@@ -111,7 +113,7 @@ float lemlib::ema(float current, float previous, float smooth) {
  * @param other the second pose
  * @return float curvature
  */
-float lemlib::getCurvature(Pose pose, Pose other) {
+float getCurvature(Pose pose, Pose other) {
     // calculate whether the pose is on the left or right side of the circle
     float side = lemlib::sgn(std::sin(pose.theta) * (other.x - pose.x) - std::cos(pose.theta) * (other.y - pose.y));
     // calculate center point and radius
@@ -123,3 +125,29 @@ float lemlib::getCurvature(Pose pose, Pose other) {
     // return curvature
     return side * ((2 * x) / (d * d));
 }
+namespace util {
+bool AUTON_RAN = true;
+
+bool is_reversed(double input) {
+  if (input < 0) return true;
+  return false;
+}
+
+int sgn(double input) {
+  if (input > 0)
+    return 1;
+  else if (input < 0)
+    return -1;
+  return 0;
+}
+
+double clip_num(double input, double max, double min) {
+  if (input > max)
+    return max;
+  else if (input < min)
+    return min;
+  return input;
+}
+
+} // namespace util
+} // namespace lemlib
