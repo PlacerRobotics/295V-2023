@@ -34,6 +34,9 @@ extern pros::Motor catapultMotor;
 extern pros::Controller controller;
 extern pros::Rotation catapultRotation;
 
+extern pros::ADIDigitalOut pneumatic1;
+extern pros::ADIDigitalOut pneumatic2;
+
 namespace lemlib {
 /**
  * @brief Struct containing all the sensors used for odometry

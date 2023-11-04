@@ -20,6 +20,9 @@
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
+pros::ADIDigitalOut pneumatic1('A');
+pros::ADIDigitalOut pneumatic2('H');
+
 // M_PI definition along with M_PI_2 definition. 
 
 

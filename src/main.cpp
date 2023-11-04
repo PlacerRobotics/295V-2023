@@ -157,5 +157,12 @@ void opcontrol() {
        if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
         loadCatapultTask.notify();
        }
+       if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
+        pneumatic2.set_value(1);
+        pneumatic1.set_value(1);
+       } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+        pneumatic1.set_value(0);
+        pneumatic2.set_value(0);
+       }
     }
 }
