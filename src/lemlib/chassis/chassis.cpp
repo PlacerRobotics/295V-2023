@@ -30,13 +30,15 @@ pros::Motor lB(6, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES
 pros::Motor rF1(1, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor rF2(2, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor rB(3, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor catapultMotor(8, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor intakeMotor(7, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
 
 // motor groups
 pros::MotorGroup leftMotors({lF1, lF2, lB}); // left motor group
 pros::MotorGroup rightMotors({rF1, rF2, rB}); // right motor group
 
 // Rotation sensor
-pros::Rotation catapult(10);
+pros::Rotation catapultRotation(10);
 
 /**
  * @brief Construct a new Chassis
@@ -395,3 +397,4 @@ void lemlib::Chassis::arcade_standard() {
     leftMotors = ySquared + xSquared;
     rightMotors = ySquared - xSquared;
 }
+

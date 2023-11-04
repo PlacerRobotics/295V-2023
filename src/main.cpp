@@ -26,6 +26,31 @@ lemlib::OdomSensors_t sensors {nullptr, nullptr, &horizontal, nullptr, &imu};
 
 lemlib::Chassis chassis(drivetrain, lateralController, angularController, sensors);
 
+
+pros::Task loadCatapultTask{ [] {
+    while (pros::Task::notify_take(true, TIMEOUT_MAX)) {
+        const int pullbackAngle = 9000; 
+
+        // normal shot
+        catapultMotor.move_voltage(12000); // 85
+        pros::delay(1000);
+
+        while(catapultRotation.get_angle() <= pullbackAngle){
+            pros::delay(20);
+            if(catapultRotation.get_angle() > pullbackAngle-1500){
+                catapultMotor.move_voltage(12000*0.50);
+            }
+        }
+
+        catapultMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+        catapultMotor.move_voltage(0);
+
+        pros::delay(20);
+    }
+}
+};
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -119,5 +144,18 @@ void autonomous() {
  */
 void opcontrol() { 
     // chassis.moveTo(20, 15, 90, 4000); 
-    chassis.arcade_standard();
+    while (true) {
+        chassis.arcade_standard();
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+        {
+            intakeMotor.move_voltage(12000);
+        }
+        else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
+        {
+            intakeMotor.move_voltage(-12000);
+        }
+       if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
+        loadCatapultTask.notify();
+       }
+    }
 }

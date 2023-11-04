@@ -29,8 +29,10 @@ extern pros::Motor rF2;
 extern pros::Motor rB;
 extern pros::Motor_Group leftMotors;
 extern pros::Motor_Group rightMotors;
+extern pros::Motor intakeMotor;
+extern pros::Motor catapultMotor;
 extern pros::Controller controller;
-extern pros::Rotation catapult;
+extern pros::Rotation catapultRotation;
 
 namespace lemlib {
 /**
@@ -288,17 +290,3 @@ class Chassis {
         DriveCurveFunction_t driveCurve;
 };
 } // namespace lemlib
-
-namespace mechanisms{
-        class Intake{
-                public:
-                bool in;
-                bool out;
-                void intake(int speed);
-                void outake(int speed);
-        };
-        class Catapult{
-                public:
-                void cataMove(int speed);
-        };
-}
