@@ -32,13 +32,13 @@ pros::Task loadCatapultTask{ [] {
         const int pullbackAngle = 9000; 
 
         // normal shot
-        catapultMotor.move_voltage(12000); // 85
+        catapultMotor.move_voltage(-9000); // 85
         pros::delay(1000);
 
         while(catapultRotation.get_angle() <= pullbackAngle){
             pros::delay(20);
             if(catapultRotation.get_angle() > pullbackAngle-1500){
-                catapultMotor.move_voltage(12000*0.50);
+                catapultMotor.move_voltage(-9000*0.50);
             }
         }
 
@@ -144,17 +144,21 @@ void autonomous() {
  */
 void opcontrol() { 
     // chassis.moveTo(20, 15, 90, 4000); 
+    allMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
     while (true) {
         chassis.arcade_standard();
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
         {
-            intakeMotor.move_voltage(12000);
+            intakeMotor.move_voltage(4500);
         }
         else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
         {
             intakeMotor.move_voltage(-12000);
         }
-       if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
+        else{
+            intakeMotor.move_voltage(0);
+        }
+       if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
         loadCatapultTask.notify();
        }
        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)){

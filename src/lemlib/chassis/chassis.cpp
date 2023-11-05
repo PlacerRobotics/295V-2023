@@ -21,20 +21,21 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 pros::ADIDigitalOut pneumatic1('A');
-pros::ADIDigitalOut pneumatic2('H');
+pros::ADIDigitalOut pneumatic2('B');
 
 // M_PI definition along with M_PI_2 definition. 
 
 
 // drive motors
-pros::Motor lF1(4, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lF2(5, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lB(6, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF1(1, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF2(2, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rB(3, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor catapultMotor(8, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor intakeMotor(7, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lF1(15, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lF2(13, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lB(14, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rF1(19, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rF2(20, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rB(10, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor catapultMotor(1, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor intakeMotor(9, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor_Group allMotors({lF1,lF2, lB, rF1, rF2, rB});
 
 // motor groups
 pros::MotorGroup leftMotors({lF1, lF2, lB}); // left motor group
@@ -391,13 +392,19 @@ void lemlib::Chassis::arcade_standard() {
 //   // Set robot to l_stick and r_stick, check joystick threshold, set active brake
 //   joy_thresh_opcontrol(fwd_stick - turn_stick, fwd_stick + turn_stick);
 
-    int yTemp = controller.get_analog(ANALOG_LEFT_Y); // left stick y
+
+    int yTemp = controller.get_analog(ANALOG_RIGHT_Y); // left stick y
     int xTemp = controller.get_analog(ANALOG_RIGHT_X); // left stick x
 
     int ySquared = (int) ((pow(yTemp, 2) / 127) * sgn(yTemp));
     int xSquared = (int) ((pow(xTemp, 2) / 127) * sgn(xTemp));
 
-    leftMotors = ySquared + xSquared;
-    rightMotors = ySquared - xSquared;
+    if(ySquared <= 10 && ySquared >= 0 && xSquared <= 10 && xSquared >= 0){
+        leftMotors = 0;
+        rightMotors = 0;
+    } else{
+        leftMotors = ySquared + xSquared;
+        rightMotors = ySquared - xSquared;
+    }
 }
 

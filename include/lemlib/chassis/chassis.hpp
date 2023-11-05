@@ -31,6 +31,7 @@ extern pros::Motor_Group leftMotors;
 extern pros::Motor_Group rightMotors;
 extern pros::Motor intakeMotor;
 extern pros::Motor catapultMotor;
+extern pros::Motor_Group allMotors;
 extern pros::Controller controller;
 extern pros::Rotation catapultRotation;
 
