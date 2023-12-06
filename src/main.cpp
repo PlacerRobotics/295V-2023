@@ -3,12 +3,15 @@
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/chassis/odom.hpp"
 ASSET(path_txt);
+ASSET(path1_txt);
+ASSET(path2_txt);
+ASSET(path3_txt);
+ASSET(path4_txt);
+ASSET(path5_txt);
 
 // Inertial Sensor on port 11
 pros::Imu imu(11);
 
-// tracking wheels
-pros::Rotation horizontalEnc(7);
 // horizontal tracking wheel. 2.75" diameter, 3.7" offset, back of the robot
 lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, -3.7);
 
@@ -122,7 +125,23 @@ void autonomous() {
     // timeout: 2000 ms
     // lookahead distance: 15 inches
     // chassis.follow("lemlib/path.txt", 2000, 15);
-    chassis.follow(path_txt, 2000, 15);
+    // chassis.follow(path_txt, 2000, 15);
+    chassis.follow(path1_txt, 2000, 15);
+    intakeMotor.move_voltage(-12000);
+    intakePiston.set_value(1);
+    chassis.follow(path2_txt, 2000, 15);
+    intakeMotor.move_voltage(12000);
+    intakePiston.set_value(0);
+    chassis.follow(path3_txt, 2000, 15);
+    intakeMotor.move_voltage(-12000);
+    intakePiston.set_value(1);
+    // imu.set_heading(0);
+    // while(imu.get_heading() <= 180){
+    //     leftMotors.move_voltage(6000);
+    //     rightMotors.move_voltage(-6000);
+    // }
+    chassis.turnTo(-6, 0, 500);
+    chassis.follow(path4_txt, 2000, 15);
     // // follow the next path, but with the robot going backwards
     // chassis.follow("path.txt", 2000, 15, true);
 }
@@ -146,7 +165,7 @@ void opcontrol() {
     // chassis.moveTo(20, 15, 90, 4000); 
     allMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
     while (true) {
-        chassis.arcade_standard();
+        chassis.tank_drive();
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
         {
             intakeMotor.move_voltage(4500);
@@ -161,12 +180,17 @@ void opcontrol() {
        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
         loadCatapultTask.notify();
        }
-       if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
-        pneumatic2.set_value(1);
-        pneumatic1.set_value(1);
-       } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
-        pneumatic1.set_value(0);
-        pneumatic2.set_value(0);
+       if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+        wing1.set_value(1);
+        wing2.set_value(1);
+       } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
+        wing1.set_value(0);
+        wing2.set_value(0);
+       }
+       if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
+        intakePiston.set_value(1);
+       } else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
+        intakePiston.set_value(0);
        }
     }
 }

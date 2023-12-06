@@ -20,8 +20,12 @@
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
-pros::ADIDigitalOut pneumatic1('A');
-pros::ADIDigitalOut pneumatic2('B');
+// Wings Pnematics
+pros::ADIDigitalOut wing1('A');
+pros::ADIDigitalOut wing2('B');
+
+// Intake Pneumatics
+pros::ADIDigitalOut intakePiston('C');
 
 // M_PI definition along with M_PI_2 definition. 
 
@@ -43,6 +47,9 @@ pros::MotorGroup rightMotors({rF1, rF2, rB}); // right motor group
 
 // Rotation sensor
 pros::Rotation catapultRotation(10);
+
+// tracking wheels
+pros::Rotation horizontalEnc(7);
 
 /**
  * @brief Construct a new Chassis
@@ -393,8 +400,8 @@ void lemlib::Chassis::arcade_standard() {
 //   joy_thresh_opcontrol(fwd_stick - turn_stick, fwd_stick + turn_stick);
 
 
-    int yTemp = controller.get_analog(ANALOG_RIGHT_Y); // left stick y
-    int xTemp = controller.get_analog(ANALOG_RIGHT_X); // left stick x
+    int yTemp = controller.get_analog(ANALOG_RIGHT_Y); // right stick y
+    int xTemp = controller.get_analog(ANALOG_RIGHT_X); // right stick x
 
     int ySquared = (int) ((pow(yTemp, 2) / 127) * sgn(yTemp));
     int xSquared = (int) ((pow(xTemp, 2) / 127) * sgn(xTemp));
@@ -408,3 +415,13 @@ void lemlib::Chassis::arcade_standard() {
     }
 }
 
+void lemlib::Chassis::tank_drive(){
+    int leftJoystick = controller.get_analog(ANALOG_LEFT_Y);
+    int rightJoystick = controller.get_analog(ANALOG_RIGHT_Y);
+
+    int leftSquared = (int) ((pow(leftJoystick, 2) / 127) * sgn(leftJoystick));
+    int rightSquared = (int) ((pow(rightJoystick, 2) / 127) * sgn(rightJoystick));
+
+    leftMotors = leftSquared;
+    rightMotors = rightSquared;
+}
