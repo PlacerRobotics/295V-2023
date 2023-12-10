@@ -10,7 +10,9 @@ ASSET(path4_txt);
 ASSET(path5_txt);
 
 // Inertial Sensor on port 11
-pros::Imu imu(11);
+pros::Imu imu(12);
+
+int auton = 0;
 
 // horizontal tracking wheel. 2.75" diameter, 3.7" offset, back of the robot
 lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, -3.7);
@@ -32,16 +34,16 @@ lemlib::Chassis chassis(drivetrain, lateralController, angularController, sensor
 
 pros::Task loadCatapultTask{ [] {
     while (pros::Task::notify_take(true, TIMEOUT_MAX)) {
-        const int pullbackAngle = 9000; 
+        const int pullbackAngle = 6000; 
 
         // normal shot
-        catapultMotor.move_voltage(-9000); // 85
+        catapultMotor.move_voltage(-12000); // 85
         pros::delay(1000);
 
         while(catapultRotation.get_angle() <= pullbackAngle){
             pros::delay(20);
             if(catapultRotation.get_angle() > pullbackAngle-1500){
-                catapultMotor.move_voltage(-9000*0.50);
+                catapultMotor.move_voltage(-9000);
             }
         }
 
@@ -53,13 +55,57 @@ pros::Task loadCatapultTask{ [] {
     }
 }
 };
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+
+void autonred1(){ // General Red Side Auton
+    // chassis.turnTo(53, 53, 1000); // turn to the point (53, 53) with a timeout of 1000 ms
+    // chassis.turnTo(-20, 32, 1500, true); // turn to the point (-20, 32) with the back of the robot facing the point, and a timeout of 1500 ms
+    // chassis.turnTo(10, 0, 1000, false, 50); // turn to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
+    // chassis.moveTo(53, 53, 1000); // move to the point (53, 53) with a timeout of 1000 ms
+    // chassis.moveTo(10, 0, 1000, 50); // move to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
+
+    // In order for the robot to read the file, we need to put it on a micro SD card. Simply drag the file onto the SD card and it will be copied over. You can then insert the SD card into the robot and it will be able to read the file.
+
+    // file name: path.txt
+    // timeout: 2000 ms
+    // lookahead distance: 15 inches
+    // chassis.follow("lemlib/path.txt", 2000, 15);
+    // chassis.follow(path_txt, 2000, 15);
+    chassis.follow(path1_txt, 2000, 15);
+    intakeMotor.move_voltage(-12000);
+    intakePiston1.set_value(1);
+    intakePiston2.set_value(1);
+    chassis.follow(path2_txt, 2000, 15);
+    intakeMotor.move_voltage(12000);
+    intakePiston1.set_value(0);
+    intakePiston2.set_value(0);
+    chassis.follow(path3_txt, 2000, 15);
+    intakeMotor.move_voltage(-12000);
+    intakePiston1.set_value(1);
+    intakePiston2.set_value(1);
+    // imu.set_heading(0);
+    // while(imu.get_heading() <= 180){
+    //     leftMotors.move_voltage(6000);
+    //     rightMotors.move_voltage(-6000);
+    // }
+    chassis.turnTo(13.651257848803102, -0.6833656034310727, 500);
+    intakePiston1.set_value(1);
+    intakePiston2.set_value(1);
+    chassis.follow(path4_txt, 2000, 15);
+    intakePiston1.set_value(0);
+    intakePiston2.set_value(0);
+    intakeMotor.move_voltage(-12000);
+    chassis.follow(path5_txt, 2000, 15);
+    intakeMotor.move_velocity(12000);
+
+    // // follow the next path, but with the robot going backwards
+    // chassis.follow("path.txt", 2000, 15, true);
+}
 
 void screen() {
     // loop forever
@@ -113,37 +159,9 @@ void competition_initialize() {}
 */
 
 void autonomous() {
-    // chassis.turnTo(53, 53, 1000); // turn to the point (53, 53) with a timeout of 1000 ms
-    // chassis.turnTo(-20, 32, 1500, true); // turn to the point (-20, 32) with the back of the robot facing the point, and a timeout of 1500 ms
-    // chassis.turnTo(10, 0, 1000, false, 50); // turn to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
-    // chassis.moveTo(53, 53, 1000); // move to the point (53, 53) with a timeout of 1000 ms
-    // chassis.moveTo(10, 0, 1000, 50); // move to the point (10, 0) with a timeout of 1000 ms, and a maximum speed of 50
-
-    // In order for the robot to read the file, we need to put it on a micro SD card. Simply drag the file onto the SD card and it will be copied over. You can then insert the SD card into the robot and it will be able to read the file.
-
-    // file name: path.txt
-    // timeout: 2000 ms
-    // lookahead distance: 15 inches
-    // chassis.follow("lemlib/path.txt", 2000, 15);
-    // chassis.follow(path_txt, 2000, 15);
-    chassis.follow(path1_txt, 2000, 15);
-    intakeMotor.move_voltage(-12000);
-    intakePiston.set_value(1);
-    chassis.follow(path2_txt, 2000, 15);
-    intakeMotor.move_voltage(12000);
-    intakePiston.set_value(0);
-    chassis.follow(path3_txt, 2000, 15);
-    intakeMotor.move_voltage(-12000);
-    intakePiston.set_value(1);
-    // imu.set_heading(0);
-    // while(imu.get_heading() <= 180){
-    //     leftMotors.move_voltage(6000);
-    //     rightMotors.move_voltage(-6000);
-    // }
-    chassis.turnTo(-6, 0, 500);
-    chassis.follow(path4_txt, 2000, 15);
-    // // follow the next path, but with the robot going backwards
-    // chassis.follow("path.txt", 2000, 15, true);
+    if(auton == 1){
+        autonred1();
+    }
 }
 
 
@@ -165,7 +183,9 @@ void opcontrol() {
     // chassis.moveTo(20, 15, 90, 4000); 
     allMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
     while (true) {
-        chassis.tank_drive();
+        pros::screen::set_pen(COLOR_WHITE);
+        pros::lcd::print(0, 0, catapultRotation.get_angle());
+        chassis.standard();
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
         {
             intakeMotor.move_voltage(4500);
@@ -177,9 +197,9 @@ void opcontrol() {
         else{
             intakeMotor.move_voltage(0);
         }
-       if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+       if(cataDistance.get() <= 7){
         loadCatapultTask.notify();
-       }
+       } 
        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
         wing1.set_value(1);
         wing2.set_value(1);
@@ -188,9 +208,11 @@ void opcontrol() {
         wing2.set_value(0);
        }
        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
-        intakePiston.set_value(1);
+        intakePiston1.set_value(1);
+        intakePiston2.set_value(1);
        } else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
-        intakePiston.set_value(0);
+        intakePiston1.set_value(0);
+        intakePiston2.set_value(0);
        }
     }
 }

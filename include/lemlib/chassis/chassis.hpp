@@ -38,7 +38,9 @@ extern pros::Rotation horizontalEnc;
 
 extern pros::ADIDigitalOut wing1;
 extern pros::ADIDigitalOut wing2;
-extern pros::ADIDigitalOut intakePiston;
+extern pros::ADIDigitalOut intakePiston1;
+extern pros::ADIDigitalOut intakePiston2;
+extern pros::Distance cataDistance;
 
 namespace lemlib {
 /**
@@ -283,6 +285,7 @@ class Chassis {
          */
         void curvature(int throttle, int turn, float cureGain = 0.0);
         void arcade_standard();
+        void standard();
         void tank_drive();
         void reset_drive_sensors_opcontrol();
         void reset_drive_sensor();

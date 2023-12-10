@@ -25,20 +25,24 @@ pros::ADIDigitalOut wing1('A');
 pros::ADIDigitalOut wing2('B');
 
 // Intake Pneumatics
-pros::ADIDigitalOut intakePiston('C');
+pros::ADIDigitalOut intakePiston1('C');
+pros::ADIDigitalOut intakePiston2('D');
+
+// Distance sensor
+pros::Distance cataDistance(11);
 
 // M_PI definition along with M_PI_2 definition. 
 
 
 // drive motors
-pros::Motor lF1(15, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lF2(13, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lB(14, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF1(19, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF2(20, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rB(10, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor catapultMotor(1, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor intakeMotor(9, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lF1(1, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lF2(2, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lB(3, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rF1(9, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rF2(5, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rB(6, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor catapultMotor(8, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor intakeMotor(7, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor_Group allMotors({lF1,lF2, lB, rF1, rF2, rB});
 
 // motor groups
@@ -424,4 +428,21 @@ void lemlib::Chassis::tank_drive(){
 
     leftMotors = leftSquared;
     rightMotors = rightSquared;
+}
+
+void lemlib::Chassis::standard() {
+    const int turn_importance = 0.9;
+    int yTemp = controller.get_analog(ANALOG_RIGHT_Y); // right stick y
+    int xTemp = controller.get_analog(ANALOG_RIGHT_X); // right stick x
+
+    int ySquared = (int) ((pow(yTemp, 2) / 127) * sgn(yTemp));
+    int xSquared = (int) ((pow(xTemp, 2) / 127) * sgn(xTemp));
+
+    if(ySquared <= 10 && ySquared >= 0 && xSquared <= 10 && xSquared >= 0){
+        leftMotors = 0;
+        rightMotors = 0;
+    } else{
+        leftMotors = (ySquared + xSquared) * turn_importance;
+        rightMotors = (ySquared - xSquared) * turn_importance;
+    }
 }

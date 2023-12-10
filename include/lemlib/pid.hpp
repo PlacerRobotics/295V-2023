@@ -123,3 +123,10 @@ class FAPID {
         static pros::Mutex logMutex;
 };
 } // namespace lemlib
+
+
+
+// double revolutions(double inches) {
+//   return inches * (3/7) * M_PI * 4.15; // inches * motor ticks * gear ratio * pi * wheel inches
+//   // inches * 300 * (3/7) * M_PI * 4.05;
+// }
