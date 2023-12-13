@@ -183,12 +183,13 @@ void opcontrol() {
     // chassis.moveTo(20, 15, 90, 4000); 
     allMotors.set_brake_modes(pros::E_MOTOR_BRAKE_BRAKE);
     while (true) {
-        pros::screen::set_pen(COLOR_WHITE);
-        pros::lcd::print(0, 0, catapultRotation.get_angle());
-        chassis.standard();
+        chassis.arcade_standard();
+        // rotation sensor data
+        const int rotationAngle = catapultRotation.get_angle();
+        printf("Rotation Sensor: %d", catapultRotation.get_angle());
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
         {
-            intakeMotor.move_voltage(4500);
+            intakeMotor.move_voltage(12000);
         }
         else if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
         {
@@ -197,7 +198,7 @@ void opcontrol() {
         else{
             intakeMotor.move_voltage(0);
         }
-       if(cataDistance.get() <= 7){
+       if(cataDistance.get() <= 50){
         loadCatapultTask.notify();
        } 
        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
