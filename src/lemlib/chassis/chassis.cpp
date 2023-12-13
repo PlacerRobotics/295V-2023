@@ -35,19 +35,19 @@ pros::Distance cataDistance(11);
 
 
 // drive motors
-pros::Motor lF1(1, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lF2(2, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor lB(3, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF1(9, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rF2(5, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor rB(6, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lF(1, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lB1(2, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor lB2(3, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rF(9, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rB1(5, pros::E_MOTOR_GEARSET_06, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor rB2(6, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor catapultMotor(8, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor intakeMotor(7, pros::E_MOTOR_GEARSET_06, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor_Group allMotors({lF1,lF2, lB, rF1, rF2, rB});
+pros::Motor_Group allMotors({lF,lB1, lB2, rF, rB1, rB2});
 
 // motor groups
-pros::MotorGroup leftMotors({lF1, lF2, lB}); // left motor group
-pros::MotorGroup rightMotors({rF1, rF2, rB}); // right motor group
+pros::MotorGroup leftMotors({lF, lB1, lB2}); // left motor group
+pros::MotorGroup rightMotors({rF, rB1, rB2}); // right motor group
 
 // Rotation sensor
 pros::Rotation catapultRotation(10);
@@ -402,9 +402,9 @@ void lemlib::Chassis::arcade_standard() {
 
 //   // Set robot to l_stick and r_stick, check joystick threshold, set active brake
 //   joy_thresh_opcontrol(fwd_stick - turn_stick, fwd_stick + turn_stick);
+    const int turn_importance = 0.9;
 
-
-    int yTemp = controller.get_analog(ANALOG_RIGHT_Y); // right stick y
+    int yTemp = controller.get_analog(ANALOG_LEFT_Y); // left stick y
     int xTemp = controller.get_analog(ANALOG_RIGHT_X); // right stick x
 
     int ySquared = (int) ((pow(yTemp, 2) / 127) * sgn(yTemp));
@@ -414,8 +414,8 @@ void lemlib::Chassis::arcade_standard() {
         leftMotors = 0;
         rightMotors = 0;
     } else{
-        leftMotors = ySquared + xSquared;
-        rightMotors = ySquared - xSquared;
+        leftMotors = (ySquared + xSquared);
+        rightMotors = (ySquared - xSquared);
     }
 }
 

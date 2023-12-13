@@ -21,12 +21,12 @@
 #include "lemlib/logger.hpp"
 #include "main.h"
 
-extern pros::Motor lF1;
-extern pros::Motor lF2;
-extern pros::Motor lB;
-extern pros::Motor rF1;
-extern pros::Motor rF2;
-extern pros::Motor rB;
+extern pros::Motor lF;
+extern pros::Motor lB1;
+extern pros::Motor lB2;
+extern pros::Motor rF;
+extern pros::Motor rB1;
+extern pros::Motor rB2;
 extern pros::Motor_Group leftMotors;
 extern pros::Motor_Group rightMotors;
 extern pros::Motor intakeMotor;
