@@ -9,10 +9,8 @@ ASSET(path3_txt);
 ASSET(path4_txt);
 ASSET(path5_txt);
 
-// Inertial Sensor on port 11
-pros::Imu imu(12);
 
-int auton = 0;
+int auton = 2;
 
 // horizontal tracking wheel. 2.75" diameter, 3.7" offset, back of the robot
 lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, -3.7);
@@ -161,6 +159,16 @@ void competition_initialize() {}
 void autonomous() {
     if(auton == 1){
         autonred1();
+    } else if(auton == 2){
+        allMotors.move_voltage(-12000);
+        pros::delay(1500);
+        allMotors.move_voltage(12000);
+        pros::delay(100);
+        allMotors.move_voltage(-12000);
+        pros::delay(100);
+        allMotors.move_voltage(12000);
+        pros::delay(100);
+        allMotors.move_voltage(0);
     }
 }
 
@@ -185,8 +193,9 @@ void opcontrol() {
     while (true) {
         chassis.arcade_standard();
         // rotation sensor data
-        const int rotationAngle = catapultRotation.get_angle();
-        printf("Rotation Sensor: %d", catapultRotation.get_angle());
+        // const int rotationAngle = catapultRotation.get_angle();
+        // printf("Rotation Sensor: %d", catapultRotation.get_angle());
+        // pros::lcd::print(0, "Rotation angle: %d\n", catapultRotation.get_angle());
         if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
         {
             intakeMotor.move_voltage(12000);

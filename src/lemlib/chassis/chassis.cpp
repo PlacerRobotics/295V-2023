@@ -31,6 +31,10 @@ pros::ADIDigitalOut intakePiston2('D');
 // Distance sensor
 pros::Distance cataDistance(11);
 
+
+// Inertial Sensor on port 11
+pros::Imu imu(12);
+
 // M_PI definition along with M_PI_2 definition. 
 
 

@@ -42,6 +42,8 @@ extern pros::ADIDigitalOut intakePiston1;
 extern pros::ADIDigitalOut intakePiston2;
 extern pros::Distance cataDistance;
 
+extern pros::Imu imu; 
+
 namespace lemlib {
 /**
  * @brief Struct containing all the sensors used for odometry

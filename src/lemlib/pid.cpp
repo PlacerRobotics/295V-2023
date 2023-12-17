@@ -14,6 +14,8 @@
 #include "lemlib/pid.hpp"
 #include "lemlib/util.hpp"
 #include "lemlib/logger.hpp"
+#include "lemlib/chassis/chassis.hpp"
+#include "main.h"
 
 // define static variables
 std::string lemlib::FAPID::input = "FAPID";
@@ -208,4 +210,133 @@ void lemlib::FAPID::log() {
         // release the logging mutex
         logMutex.give();
     }
+}
+
+
+int drivePID(int driveDistance){
+    //PID constants
+    float kP = 0.5;
+    float kI = 0;
+    float kD = 0;
+    //Variables for drive PID
+    float error = 0;      //how far the robot is from the target
+    float integral = 0;   //area under the error vs time graph
+    float derivative = 0; //slope of the error vs time graph
+    float prevError = 0;  //the error for the previous iteration of the PID loop
+
+    //Motor power variables
+    float motorPower = 0;     //how much power to apply to the motors, ranging from -1 (backwards at full power) to 1 (forwards at full power)
+    float prevMotorPower = 0; //the motor power for the previous iteration of the PID loop
+    //Reset motor encoders
+    rF.set_zero_position(0);
+    rB1.set_zero_position(0);
+    rB2.set_zero_position(0);
+    lF.set_zero_position(0);
+    lB1.set_zero_position(0);
+    lB2.set_zero_position(0);
+
+    while(true){
+        float currentDistance = (rF.get_position() + rB1.get_position() + rB2.get_position() + lF.get_position() + lB1.get_position() + lB2.get_position());
+        pros::delay(20);
+        error = driveDistance - currentDistance;
+        if(error < 200 && error > -200){
+            integral += error;
+        }
+        derivative = error - prevError;
+        motorPower = (kP * error) + (kI * integral) + (kD * derivative); //calculate motor power
+        if(motorPower > 1) motorPower = 1;
+        if(motorPower < -1) motorPower = -1;
+        
+        float slewRate = 0.1f;
+        if(motorPower > prevMotorPower + slewRate) motorPower = prevMotorPower + slewRate;
+        if(motorPower < prevMotorPower - slewRate) motorPower = prevMotorPower - slewRate;
+
+        lF.move_voltage(-12000 * motorPower);
+        lB1.move_voltage(-12000 * motorPower);
+        lB2.move_voltage(-12000 * motorPower);
+        rF.move_voltage(12000 * motorPower);
+        rB1.move_voltage(12000 * motorPower);
+        rB2.move_voltage(12000 * motorPower);
+        //update "previous" variables
+        prevMotorPower = motorPower;
+        prevError = error;
+
+        //Exit the PID if the robot is within 10 degrees of the target
+        if (error > -10 && error < 10) {
+            break;
+        }
+    }
+    //stop the motors when the PID is done
+    lF.move_voltage(0);
+    lB1.move_voltage(0);
+    lB2.move_voltage(0);
+    rF.move_voltage(0);
+    rB1.move_voltage(0);
+    rB2.move_voltage(0);
+    return 0;
+}
+
+int turnPID(int turnDistance){
+    //PID constants
+    float kP = 0.05;
+    float kI = 0;
+    float kD = 0;
+
+    //Variables for turn PID
+    float error = 0;      //how far the robot is from the target, in degrees
+    float integral = 0;   //area under the error vs time graph
+    float derivative = 0; //slope of the error vs time graph
+    float prevError = 0;  //the error for the previous iteration of the PID loop
+
+    //Motor power variables
+    float motorPower = 0;     //how much power to apply to the motors, ranging from -1 (clockwise at full power) to 1 (counterclockwise at full power)
+    float prevMotorPower = 0; //the motor power for the previous iteration of the PID loop
+
+    float startDistance = imu.get_rotation();  
+
+    while(true) {
+    //Calculate the current distance of the robot and store it as a number (float)
+        float currentDistance = startDistance - imu.get_rotation();
+
+        pros::delay(20);//don't hog CPU, this stays at the end of the loop
+        error = turnDistance - currentDistance; //calculate error
+        if (error < 10 && error > -10) {
+            integral += error; //updated the integral term if |error| < 10
+        }
+        derivative = error - prevError; //calculate the derivative term
+        motorPower = (kP * error) + (kI * integral) + (kD * derivative); //calculate motor power
+        //keep motor power between -1 and 1
+        if (motorPower > 1) motorPower = 1;
+        if (motorPower < -1) motorPower = -1;
+
+        //slew rate limiter
+        float slewRate = 0.1f;
+        if (motorPower > prevMotorPower + slewRate) motorPower = prevMotorPower + slewRate;
+        if (motorPower < prevMotorPower - slewRate) motorPower = prevMotorPower - slewRate;
+
+        lF.move_voltage(-12000 * motorPower);
+        lB1.move_voltage(-12000 * motorPower);
+        lB2.move_voltage(-12000 * motorPower);
+        rF.move_voltage(12000 * motorPower);
+        rB1.move_voltage(12000 * motorPower);
+        rB2.move_voltage(12000 * motorPower);
+        //update "previous" variables
+        prevMotorPower = motorPower;
+        prevError = error;
+
+        //Exit the PID if the robot is within 10 degrees of the target
+        if (error > -1 && error < 1) {
+            break;
+        }
+    }
+
+    //stop the motors when the PID is done
+    lF.move_voltage(0);
+    lB1.move_voltage(0);
+    lB2.move_voltage(0);
+    rF.move_voltage(0);
+    rB1.move_voltage(0);
+    rB2.move_voltage(0);
+      
+    return 0;
 }
